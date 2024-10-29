@@ -21,6 +21,9 @@
 uint32_t SysClock;
 volatile bool timeoutFlag = false;  // Flag para controle do timeout
 
+volatile uint32_t count = 0;   // Contador de tempo
+volatile bool sw1Pressed = false;  // Estado do SW1
+
 void UARTSendString(const char *str);
 void SwitchHandler(void);
 void SysTickHandler(void);  // Protótipo do SysTick Handler
@@ -79,18 +82,29 @@ void UARTIntHandler(void) {
 }
 
 
-// SysTick Handler - Verifica timeout e alterna LEDs
+// SysTick Handler - Conta apenas quando SW1 está pressionado
 void SysTickHandler(void) {
-    static uint32_t count = 0;
-    count++;
+    if (sw1Pressed) {
+        count++;
 
-    if (count >= 10000) {  // Timeout de 10 seg
-        count = 0;
-        timeoutFlag = true;  // Seta a flag de timeout
+        // Imprime tempo no Putty a cada 1 segundo
+        if (count % 1000 == 0) {  // Considerando SysTick configurado para 1ms
+            char buffer[50];
+            snprintf(buffer, sizeof(buffer), "Tempo: %lu segundos\r\n", count / 1000);
+            UARTSendString(buffer);
+        }
 
-        // Alterna LEDs conforme diagrama
-        GPIOPinWrite(LED_PORTN, LED1 | LED2, 0);  // Desliga LED 1 e 2
-        GPIOPinWrite(LED_PORTF, LED3 | LED4, LED3 | LED4);  // Liga LED 3 e 4
+        if (count >= 10000) {  // Timeout de 10 segundos
+            count = 0;
+            sw1Pressed = false;  // Desativa a contagem
+            timeoutFlag = true;
+
+            // Liga LEDs 3 e 4 e desliga LEDs 1 e 2
+            GPIOPinWrite(LED_PORTN, LED1 | LED2, 0);
+            GPIOPinWrite(LED_PORTF, LED3 | LED4, LED3 | LED4);
+
+            UARTSendString("Fim de jogo!\r\n");
+        }
     }
 }
 
@@ -104,29 +118,39 @@ void SetupSysTick(void) {
 }
 
 
-// Handler para interrupções dos switches SW1 e SW2
+// Handler para SW1 e SW2
 void SwitchHandler(void) {
     uint32_t status = GPIOIntStatus(SW_PORT, true);
     GPIOIntClear(SW_PORT, status);
 
     if (status & SW1) {
-				GPIOPinWrite(LED_PORTN, LED1 | LED2, LED1 | LED2);	 // liga LED 1 e 2 
-				GPIOPinWrite(LED_PORTF, LED3 | LED4, 0);	// desliga LED 3 e 4 
+        // Verifica se SW1 está pressionado ou solto
+        if (GPIOPinRead(SW_PORT, SW1) == 0) {
+            sw1Pressed = true;  // Inicia a contagem
+						count = 0;
+
+            // Liga LEDs 1 e 2 e desliga LEDs 3 e 4
+            GPIOPinWrite(LED_PORTN, LED1 | LED2, LED1 | LED2);
+            GPIOPinWrite(LED_PORTF, LED3 | LED4, 0);
+
+            UARTSendString("SW1 pressionado. Contagem iniciada.\r\n");
+        } else {
+            sw1Pressed = false;  // Para a contagem
+            UARTSendString("SW1 solto.\r\n");
+        }
     }
 
     if (status & SW2) {
-			
-        // Reinicia a contagem do SysTick
-        SysTickDisable();  // Desabilita o SysTick temporariamente
-        SysTickPeriodSet(SysClock / 1000);  // Configura o SysTick para 1ms
-        SysTickEnable();  // Habilita o SysTick novamente
+        // Reinicia o jogo ao pressionar SW2
+        sw1Pressed = false;
+        count = 0;
+        timeoutFlag = false;
 
-        // Reconfigura os LEDs para o estado inicial
+        // Liga todos os LEDs
         GPIOPinWrite(LED_PORTN, LED1 | LED2, LED1 | LED2);
         GPIOPinWrite(LED_PORTF, LED3 | LED4, LED3 | LED4);
 
-        // Reseta a flag de timeout
-        timeoutFlag = false;
+        UARTSendString("Jogo reiniciado.\r\n");
     }
 }
 
