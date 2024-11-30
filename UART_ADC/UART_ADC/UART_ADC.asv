@@ -1,0 +1,53 @@
+% Clear environment
+clear all;
+close all;
+clc;
+
+% Find any existing serial objects and close them if open
+if ~isempty(instrfind)
+    fclose(instrfind);
+    delete(instrfind);
+end
+
+% Now try creating and opening a new serial object
+s = serial('COM8', 'BaudRate', 115200, 'Terminator', 'LF');
+fopen(s);
+
+% Prepare the figure
+h = figure;
+hold on;
+grid on;
+xlabel('Sample Number');
+ylabel('ADC Value');
+title('Real-time ADC Data');
+xlim([1, 100]); % Initial x-axis limit
+ylim([0, 4095]); % Adjust the y-axis limit to match your ADC resolution
+
+% Initialize the plot
+n = 0; % Sample number
+dataValues = []; % Store ADC values here
+hLine = plot(nan, nan, 'b-'); % Initial plot object with no visible data
+
+% Loop until the figure is closed
+while ishandle(h)
+    if s.BytesAvailable > 0
+        data = fscanf(s, '%d'); % Read data from the serial port
+        n = n + 1; % Increment the sample number
+        dataValues(end + 1) = data; % Append new data
+
+        % Update the plot
+        set(hLine, 'XData', 1:n, 'YData', dataValues); % Update x and y data of the plot
+
+        % Scroll the x-axis if necessary
+        if n > 100
+            xlim([n-99, n]); % Keep the window of the last 100 samples
+        end
+
+        drawnow; % Update the figure
+    end
+end
+
+% Close the serial port
+fclose(s);
+delete(s);
+clear s;
