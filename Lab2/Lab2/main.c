@@ -22,6 +22,8 @@
 #define LED3 GPIO_PIN_4
 #define LED4 GPIO_PIN_0
 
+
+
 // Variáveis Globais
 uint32_t SysClock;
 volatile uint32_t g_ui32LDRValue = 0;     // Valor lido do LDR
@@ -37,6 +39,7 @@ void Timer0IntHandler(void);
 void UARTSend(const char *pui8Buffer);
 void ProcessLDRValue(uint32_t ldrValue);
 void SetupLEDs(void);
+
 int main(void) {
     // Configuração do clock do sistema
     SysClock = SysCtlClockFreqSet((SYSCTL_XTAL_25MHZ | SYSCTL_OSC_MAIN |
@@ -59,19 +62,22 @@ int main(void) {
     }
 }
 
+
 void SetupPWM(void) {
+    // Habiplita PWM e o port do PWM
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOG);
     SysCtlPeripheralEnable(SYSCTL_PERIPH_PWM0);
-    GPIOPinTypePWM(GPIO_PORTG_BASE, GPIO_PIN_0);
-    GPIOPinConfigure(GPIO_PG0_M0PWM4);
+    GPIOPinTypePWM(GPIO_PORTG_BASE, GPIO_PIN_1);
+    GPIOPinConfigure(GPIO_PG1_M0PWM5);
+    // Configura o clock do PWM 
+    SysCtlPWMClockSet(SYSCTL_PWMDIV_2); 
 
-    SysCtlPWMClockSet(SYSCTL_PWMDIV_2);
-
-    uint32_t pwmPeriod = (SysClock / 1) / PWM_FREQUENCY;
+    // Configura gerador PWM
+    uint32_t pwmPeriod = (SysClock/1) / PWM_FREQUENCY;  // Adjust clock division here
     PWMGenConfigure(PWM0_BASE, PWM_GEN_2, PWM_GEN_MODE_DOWN);
     PWMGenPeriodSet(PWM0_BASE, PWM_GEN_2, pwmPeriod);
-    PWMPulseWidthSet(PWM0_BASE, PWM_OUT_4, 0);
-    PWMOutputState(PWM0_BASE, PWM_OUT_4_BIT, true);
+    PWMPulseWidthSet(PWM0_BASE, PWM_OUT_5, g_ui32PWMDutyCycle);
+    PWMOutputState(PWM0_BASE, PWM_OUT_5_BIT, true);
     PWMGenEnable(PWM0_BASE, PWM_GEN_2);
 }
 
@@ -84,11 +90,18 @@ void SetupUart(void) {
 		// Enable UART0
     SysCtlPeripheralEnable(SYSCTL_PERIPH_UART0);
     while(!SysCtlPeripheralReady(SYSCTL_PERIPH_UART0));
+	
+    //UARTConfigSetExpClk(UART0_BASE, SysClock, 115200,
+        //(UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE));
+    //UARTFIFODisable(UART0_BASE);
+    //UARTIntEnable(UART0_BASE, UART_INT_RX);
+    //UARTIntRegister(UART0_BASE, UARTIntHandler);
+	
+	
+		    // 115200, 8-N-1 
     UARTConfigSetExpClk(UART0_BASE, SysClock, 115200,
-        (UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE));
-    UARTFIFODisable(UART0_BASE);
-    UARTIntEnable(UART0_BASE, UART_INT_RX);
-    UARTIntRegister(UART0_BASE, UARTIntHandler);
+                        (UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE));
+    UARTIntEnable(UART0_BASE, UART_INT_RX | UART_INT_RT);
 	
 		// Configure GPIO pins for UART0
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
@@ -97,6 +110,7 @@ void SetupUart(void) {
     GPIOPinConfigure(GPIO_PA1_U0TX);
     GPIOPinTypeUART(GPIO_PORTA_BASE, GPIO_PIN_0 | GPIO_PIN_1);
 }
+
 
 void SetupLEDs(void) {
     // Habilita GPIO para LEDs (Portas N e F)
@@ -157,7 +171,7 @@ void Timer0IntHandler(void) {
 }
 
 void ProcessLDRValue(uint32_t ldrValue) {
-    uint32_t pwmPeriod = PWMGenPeriodGet(PWM0_BASE, PWM_GEN_2);
+		uint32_t pwmPeriod = PWMGenPeriodGet(PWM0_BASE, PWM_GEN_2);	  
 
     if (ldrValue < 3000) {
 				GPIOPinWrite(LED_PORTN, LED1, LED1);
@@ -188,7 +202,7 @@ void ProcessLDRValue(uint32_t ldrValue) {
 		sprintf(buffer, "Duty cycle: %u\r\n", g_ui32PWMDutyCycle);
 		UARTSend(buffer);
 
-    PWMPulseWidthSet(PWM0_BASE, PWM_OUT_4, g_ui32PWMDutyCycle);
+    PWMPulseWidthSet(PWM0_BASE, PWM_OUT_5, g_ui32PWMDutyCycle);
 }
 
 void UARTSend(const char *pui8Buffer) {

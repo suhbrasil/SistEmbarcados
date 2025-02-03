@@ -1,0 +1,130 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: µVision V5.39.0.0
+Copyright (C) 2023 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: Suzana Pachelle, UTFPR, LIC=----
+ 
+Tool Versions:
+Toolchain:       MDK-Lite  Version: 5.39.0.0
+Toolchain Path:  C:\Keil_v5\ARM\ARMCLANG\Bin
+C Compiler:      ArmClang.exe V6.21
+Assembler:       Armasm.exe V6.21
+Linker/Locator:  ArmLink.exe V6.21
+Library Manager: ArmAr.exe V6.21
+Hex Converter:   FromElf.exe V6.21
+CPU DLL:         SARMCM3.DLL V5.39.0.0
+Dialog DLL:      DCM.DLL V1.17.5.0
+Target DLL:      lmidk-agdi.dll V???
+Dialog DLL:      TCM.DLL V1.56.4.0
+ 
+<h2>Project:</h2>
+C:\Users\suzib\OneDrive\Documentos\SistEmbarcados\SistEmbarcados\Lab4\RTOS1\Lab1.uvprojx
+Project File Date:  02/03/2025
+
+<h2>Output:</h2>
+*** Using Compiler 'V6.21', folder: 'C:\Keil_v5\ARM\ARMCLANG\Bin'
+Build target 'Target 1'
+compiling main.c...
+compiling rtx_lib.c...
+compiling rtx_delay.c...
+compiling rtx_memory.c...
+compiling rtx_evr.c...
+compiling rtx_evflags.c...
+compiling rtx_kernel.c...
+compiling rtx_mutex.c...
+compiling rtx_system.c...
+compiling rtx_mempool.c...
+compiling rtx_semaphore.c...
+compiling rtx_msgqueue.c...
+compiling rtx_timer.c...
+compiling RTX_Config.c...
+compiling system_TM4C129.c...
+compiling os_systick.c...
+compiling rtx_thread.c...
+linking...
+Program Size: Code=21300 RO-data=2000 RW-data=168 ZI-data=34728  
+".\Objects\Lab1.axf" - 0 Error(s), 0 Warning(s).
+
+<h2>Software Packages used:</h2>
+
+Package Vendor: ARM
+                https://www.keil.com/pack/ARM.CMSIS.6.1.0.pack
+                ARM::CMSIS@6.1.0
+                CMSIS (Common Microcontroller Software Interface Standard)
+   * Component: OS Tick Version: 1.0.1
+   * Component: RTOS2 Version: 2.3.0
+   * Component: CORE Version: 6.1.0
+   * Component: SysTick Version: 1.0.5
+
+Package Vendor: ARM
+                https://www.keil.com/pack/ARM.CMSIS-RTX.5.9.0.pack
+                ARM::CMSIS-RTX@5.9.0
+                RTX RTOS implementation of CMSIS-RTOS2 API
+   * Component: Keil RTX5 Variant: Source Version: 5.9.0
+
+Package Vendor: Keil
+                http://www.keil.com/pack/Keil.TM4C_DFP.1.1.0.pack
+                Keil::TM4C_DFP@1.1.0
+                Texas Instruments Tiva C Series Device Support and Examples
+   * Component: Startup Version: 1.0.0
+
+<h2>Collection of Component include folders:</h2>
+  ./RTE/CMSIS
+  ./RTE/_Target_1
+  C:/Users/suzib/AppData/Local/Arm/Packs/ARM/CMSIS-RTX/5.9.0/Include
+  C:/Users/suzib/AppData/Local/Arm/Packs/ARM/CMSIS/6.1.0/CMSIS/Core/Include
+  C:/Users/suzib/AppData/Local/Arm/Packs/ARM/CMSIS/6.1.0/CMSIS/RTOS2/Include
+  C:/Users/suzib/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C129
+
+<h2>Collection of Component Files used:</h2>
+
+   * Component: ::CMSIS:OS Tick(API)@1.0.1
+      Include file:  CMSIS/RTOS2/Include/os_tick.h
+
+   * Component: ::CMSIS:RTOS2(API)@2.3.0
+      Include file:  CMSIS/RTOS2/Include/cmsis_os2.h
+
+   * Component: ARM::CMSIS:CORE@6.1.0
+
+   * Component: ARM::CMSIS:OS Tick:SysTick@1.0.5
+      Source file:   CMSIS/RTOS2/Source/os_systick.c
+
+   * Component: ARM::CMSIS:RTOS2:Keil RTX5&Source@5.9.0
+      Source file:   Source/rtx_delay.c
+      Source file:   Source/rtx_kernel.c
+      Include file:  Include/rtx_os.h
+      Source file:   Source/rtx_memory.c
+      Source file:   Template/MsgQueue.c
+      Source file:   Source/rtx_msgqueue.c
+      Source file:   Source/rtx_semaphore.c
+      Source file:   Source/rtx_evr.c
+      Source file:   Template/Mutex.c
+      Source file:   Template/Semaphore.c
+      Source file:   Source/GCC/irq_armv7m.S
+      Source file:   Source/rtx_timer.c
+      Source file:   Source/rtx_mempool.c
+      Source file:   Config/RTX_Config.c
+      Source file:   Template/Thread.c
+      Source file:   Template/svc_user.c
+      Source file:   Source/rtx_system.c
+      Include file:  Config/RTX_Config.h
+      Source file:   Source/rtx_thread.c
+      Source file:   Template/Events.c
+      Source file:   Source/rtx_lib.c
+      Source file:   Template/Timer.c
+      Source file:   Template/main.c
+      Source file:   Source/rtx_evflags.c
+      Source file:   Source/rtx_mutex.c
+      Source file:   Template/MemPool.c
+
+   * Component: Keil::Device:Startup@1.0.0
+      Source file:   Device/Source/ARM/startup_TM4C129.s
+      Include file:  Device/Include/TM4C129/TM4C129.h
+      Source file:   Device/Source/system_TM4C129.c
+Build Time Elapsed:  00:00:01
+</pre>
+</body>
+</html>
